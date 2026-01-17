@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.env
+
+# Spark/Java
+*.class
+*.jar
+spark-warehouse/
+metastore_db/
+derby.log
+checkpoint/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Data
+data/
+logs/
