@@ -57,45 +57,64 @@ if df is not None and not df.empty:
     df['timestamp'] = pd.to_datetime(df['event_time'])
     df['price'] = df['price'].astype(float)
     df['volume'] = df['volume'].astype(float)
+    
+    # Calculate Technical Indicators
+    df = df.sort_values('timestamp')
+    df['SMA_5'] = df.groupby('symbol')['price'].transform(lambda x: x.rolling(window=5).mean())
+    df['Volatility'] = df.groupby('symbol')['price'].transform(lambda x: x.pct_change().rolling(window=5).std())
 
     # Top Metrics
-    latest = df.iloc[0]
+    latest = df.iloc[-1]
     with metrics_placeholder.container():
         m1, m2, m3 = st.columns(3)
         # Get latest price for each symbol
-        latest_prices = df.groupby('symbol').first()['price']
+        latest_prices = df.groupby('symbol').last()['price']
         m1.metric("Bitcoin", f"${latest_prices.get('BITCOIN', 0):,.2f}")
         m2.metric("Ethereum", f"${latest_prices.get('ETHEREUM', 0):,.2f}")
         m3.metric("Solana", f"${latest_prices.get('SOLANA', 0):,.2f}")
 
     with col_chart:
-        # Create Professional Altair Charts
+        # Create Tabs for different views
+        tab1, tab2 = st.tabs(["📉 Price & Trends", "📊 Volatility & Risk"])
         
-        # 1. Price Chart
-        price_chart = alt.Chart(df).mark_line(point=False).encode(
-            x=alt.X('timestamp', title=None, axis=alt.Axis(format='%H:%M:%S')),
-            y=alt.Y('price', title='Price (USD)', scale=alt.Scale(zero=False)),
-            color=alt.Color('symbol', legend=alt.Legend(title="Asset", orient="top")),
-            tooltip=['timestamp', 'symbol', 'price']
-        ).properties(
-            height=300,
-            title="Price Trend"
-        ).interactive()
-        
-        st.altair_chart(price_chart, use_container_width=True)
-        
-        # 2. Volume Chart
-        vol_chart = alt.Chart(df).mark_bar().encode(
-            x=alt.X('timestamp', title='Time', axis=alt.Axis(format='%H:%M:%S')),
-            y=alt.Y('volume', title='Volume'),
-            color='symbol',
-            tooltip=['timestamp', 'symbol', 'volume']
-        ).properties(
-            height=150,
-            title="Trading Volume"
-        ).interactive()
-        
-        st.altair_chart(vol_chart, use_container_width=True)
+        with tab1:
+            # 1. Price Chart with SMA Overlay
+            base = alt.Chart(df).encode(x=alt.X('timestamp', title=None, axis=alt.Axis(format='%H:%M:%S')))
+            
+            line = base.mark_line().encode(
+                y=alt.Y('price', title='Price (USD)', scale=alt.Scale(zero=False)),
+                color='symbol',
+                tooltip=['timestamp', 'symbol', 'price']
+            )
+            
+            sma = base.mark_line(strokeDash=[5, 5], opacity=0.5).encode(
+                y='SMA_5',
+                color='symbol',
+                tooltip=['timestamp', 'symbol', 'SMA_5']
+            )
+            
+            st.altair_chart((line + sma).interactive(), use_container_width=True)
+            
+            # 2. Volume Chart
+            vol_chart = alt.Chart(df).mark_bar().encode(
+                x=alt.X('timestamp', title=None, axis=alt.Axis(format='%H:%M:%S', labels=False)),
+                y=alt.Y('volume', title='Volume'),
+                color='symbol',
+                tooltip=['timestamp', 'symbol', 'volume']
+            ).properties(height=150).interactive()
+            
+            st.altair_chart(vol_chart, use_container_width=True)
+            
+        with tab2:
+            # 3. Volatility Chart
+            volatility_chart = alt.Chart(df).mark_line().encode(
+                x=alt.X('timestamp', title='Time', axis=alt.Axis(format='%H:%M:%S')),
+                y=alt.Y('Volatility', title='Price Volatility (Rolling StdDev)'),
+                color='symbol',
+                tooltip=['timestamp', 'symbol', 'Volatility']
+            ).properties(height=300).interactive()
+            
+            st.altair_chart(volatility_chart, use_container_width=True)
 
     with col_ai:
         st.subheader("AI Analyst")
