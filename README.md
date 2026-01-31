@@ -54,8 +54,6 @@ streamlit run scripts/genai_app.py
 ```
 Access at: http://localhost:8501
 
-##  Video Demo
-[Link to your demo video goes here]
 
 ## 📄 License
 MIT
