@@ -1,26 +1,26 @@
-# 🚀 Real-Time GenAI Crypto Intelligence Platform
+#  Real-Time GenAI Crypto Intelligence Platform
 
 A high-performance Data Engineering project that combines **Real-Time Streaming** with **Generative AI** to analyze crypto market trends.
 
 ![Status](https://img.shields.io/badge/Status-Live-green) ![Stack](https://img.shields.io/badge/Stack-Spark%20%7C%20Redpanda%20%7C%20Iceberg%20%7C%20MinIO-blue)
 
-## 💡 What it does
+##  What it does
 This platform ingests live cryptocurrency data (Bitcoin, Ethereum, Solana), processes it in real-time, stores it in a Data Lakehouse, and uses an AI Agent to answer questions about market trends.
 
-## 🏗 Architecture
+##  Architecture
 1.  **Ingestion**: Python Producer fetches live data from **CoinGecko API** -> **Redpanda (Kafka)**.
 2.  **Processing**: **Apache Spark Structured Streaming** aggregates data (windowing, cleaning).
 3.  **Storage**: Data is written to **MinIO (S3)** using **Apache Iceberg** format (The Lakehouse).
 4.  **AI Analysis**: **Streamlit** dashboard queries the Lakehouse via **DuckDB** and uses **OpenAI GPT-4** for insights.
 
-## 🛠️ Tech Stack
+##  Tech Stack
 *   **Streaming**: Redpanda (Kafka-compatible, C++ performance)
 *   **Processing**: Apache Spark 3.5 (Structured Streaming)
 *   **Storage**: MinIO (S3 Object Storage) + Apache Iceberg (Table Format)
 *   **Interface**: Streamlit + Altair (Charts) + LangChain/OpenAI (RAG)
 *   **Infrastructure**: Docker Compose
 
-## 🚀 How to Run
+##  How to Run
 
 ### 1. Prerequisites
 *   Docker & Docker Compose
@@ -54,7 +54,7 @@ streamlit run scripts/genai_app.py
 ```
 Access at: http://localhost:8501
 
-## 🎥 Video Demo
+##  Video Demo
 [Link to your demo video goes here]
 
 ## 📄 License
