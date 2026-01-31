@@ -1,0 +1,11 @@
+kafka-python
+requests
+pandas
+pyspark==3.5.0
+minio
+streamlit
+langchain
+openai
+qdrant-client
+duckdb
+pyiceberg
